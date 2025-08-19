@@ -123,6 +123,33 @@ router.get("/", authMiddleware, async (req, res) => {
  *       401:
  *         description: Unauthorized
  */
+/**
+ * @swagger
+ * /api/difficulty/{id}:
+ *   get:
+ *     summary: Get a specific difficulty level
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Difficulty ID
+ *     responses:
+ *       200:
+ *         description: Difficulty details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Difficulty'
+ *       404:
+ *         description: Difficulty not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/:id", authMiddleware, async (req, res) => {
     try {
         const difficulty = await Diffmodel.findOne({ _id: req.params.id });
@@ -136,6 +163,46 @@ router.get("/:id", authMiddleware, async (req, res) => {
 });
 
 // UPDATE difficulty by id
+/**
+ * @swagger
+ * /api/difficulty/{id}:
+ *   put:
+ *     summary: Update a difficulty level
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Difficulty ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 enum: [easy, medium, hard]
+ *                 description: New difficulty name
+ *     responses:
+ *       200:
+ *         description: Difficulty updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Difficulty'
+ *       404:
+ *         description: Difficulty not found
+ *       400:
+ *         description: Invalid input
+ *       401:
+ *         description: Unauthorized
+ */
 router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const { name } = req.body;
@@ -154,6 +221,31 @@ router.put("/:id", authMiddleware, async (req, res) => {
 });
 
 // DELETE difficulty by id
+/**
+ * @swagger
+ * /api/difficulty/{id}:
+ *   delete:
+ *     summary: Delete a difficulty level
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Difficulty ID
+ *     responses:
+ *       200:
+ *         description: Difficulty deleted successfully
+ *       404:
+ *         description: Difficulty not found
+ *       401:
+ *         description: Unauthorized
+ *       400:
+ *         description: Cannot delete difficulty that has associated levels
+ */
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const difficulty = await Diffmodel.findOneAndDelete({ _id: req.params.id });

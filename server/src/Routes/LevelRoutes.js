@@ -204,7 +204,51 @@ router.get("/:id", authMiddleware, async (req, res) => {
     }
 });
 
-// UPDATE level by MongoDB _id
+/**
+ * @swagger
+ * /api/level/{id}:
+ *   put:
+ *     summary: Update a level
+ *     tags: [Levels]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Level ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LevelInput'
+ *     responses:
+ *       200:
+ *         description: Level updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Level'
+ *                 - type: object
+ *                   properties:
+ *                     difficulty:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: number
+ *                         name:
+ *                           type: string
+ *       404:
+ *         description: Level not found
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: Unauthorized
+ */
 router.put("/:id", authMiddleware, async (req, res) => {
     try {
         const error = await validateLevelData(req.body);
@@ -223,7 +267,29 @@ router.put("/:id", authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE level by MongoDB _id
+/**
+ * @swagger
+ * /api/level/{id}:
+ *   delete:
+ *     summary: Delete a level
+ *     tags: [Levels]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Level ID
+ *     responses:
+ *       200:
+ *         description: Level deleted successfully
+ *       404:
+ *         description: Level not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const level = await LevelModel.findByIdAndDelete(req.params.id);
