@@ -6,6 +6,7 @@ const authMiddleware = require("./src/utils/token");
 const DifficultyRouter = require("./src/Routes/DifficultyRoutes");
 const LevelRouter = require("./src/Routes/LevelRoutes");
 const UserRouter = require("./src/Routes/UserRoute");
+const LeaderRouter = require("./src/Routes/LeaderBoardRoute");
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.use("/api/auth", router);
 app.use("/api/user",UserRouter);
 app.use("/api/difficulty", DifficultyRouter);
 app.use("/api/level", LevelRouter);
-
+app.use("/api/lead",LeaderRouter);
 const PORT = process.env.PORT || 4001;
 
 app.get("/home",(req,res)=>{
