@@ -4,6 +4,43 @@ const LevelModel = require("../Model/Level");
 const Diffmodel = require("../Model/Difficulty");
 const authMiddleware = require("../utils/token");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Levels
+ *   description: Game level management
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LevelInput:
+ *       type: object
+ *       required:
+ *         - name
+ *         - bots
+ *         - bullets
+ *         - difficulty
+ *         - defaultTime
+ *       properties:
+ *         name:
+ *           type: number
+ *           description: Level number
+ *         bots:
+ *           type: number
+ *           description: Number of bots in the level
+ *         bullets:
+ *           type: number
+ *           description: Number of bullets available
+ *         difficulty:
+ *           type: number
+ *           description: Difficulty ID
+ *         defaultTime:
+ *           type: number
+ *           description: Default time for the level
+ */
+
 // Validate request body
 async function validateLevelData(data) {
     const { defaultTime, name, bots, bullets, difficulty } = data;
@@ -21,7 +58,32 @@ async function validateLevelData(data) {
     return null;
 }
 
-// CREATE
+/**
+ * @swagger
+ * /api/level:
+ *   post:
+ *     summary: Create a new level
+ *     tags: [Levels]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LevelInput'
+ *     responses:
+ *       201:
+ *         description: Level created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Level'
+ *       400:
+ *         description: Invalid input or level already exists
+ *       401:
+ *         description: Unauthorized
+ */
 router.post("/", authMiddleware, async (req, res) => {
     try {
 
@@ -40,7 +102,36 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-// READ all levels (manual join to difficulty)
+/**
+ * @swagger
+ * /api/level:
+ *   get:
+ *     summary: Get all levels
+ *     tags: [Levels]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all levels
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - $ref: '#/components/schemas/Level'
+ *                   - type: object
+ *                     properties:
+ *                       difficulty:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: number
+ *                           name:
+ *                             type: string
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const levels = await LevelModel.find();
@@ -61,7 +152,43 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-// READ single level by MongoDB _id
+/**
+ * @swagger
+ * /api/level/{id}:
+ *   get:
+ *     summary: Get a specific level
+ *     tags: [Levels]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Level ID
+ *     responses:
+ *       200:
+ *         description: Level details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Level'
+ *                 - type: object
+ *                   properties:
+ *                     difficulty:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: number
+ *                         name:
+ *                           type: string
+ *       404:
+ *         description: Level not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/:id", authMiddleware, async (req, res) => {
     try {
         const level = await LevelModel.findById(req.params.id);

@@ -7,8 +7,51 @@ const Difficulty = require("../Model/Difficulty");
 const User = require("../Model/User");
 const mongoose = require('mongoose');
 
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: User preferences and profile management
+ */
 
-// Create preferences
+/**
+ * @swagger
+ * /api/user/preferences:
+ *   post:
+ *     summary: Create user preferences
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - volume
+ *               - sfx
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: User ID
+ *               volume:
+ *                 type: number
+ *                 minimum: 0
+ *                 maximum: 100
+ *                 description: Volume level (0-100)
+ *               sfx:
+ *                 type: boolean
+ *                 description: Sound effects enabled/disabled
+ *     responses:
+ *       201:
+ *         description: Preferences created successfully
+ *       404:
+ *         description: User not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.post('/preferences', authMiddleware,  async (req, res) => {
   try {
     const { userId, volume, sfx } = req.body;
@@ -37,7 +80,42 @@ router.post('/preferences', authMiddleware,  async (req, res) => {
   }
 });
 
-// Update preferences
+/**
+ * @swagger
+ * /api/user/preferences/{userId}:
+ *   put:
+ *     summary: Update user preferences
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               volume:
+ *                 type: number
+ *                 minimum: 0
+ *                 maximum: 100
+ *               sfx:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Preferences updated successfully
+ *       404:
+ *         description: Preferences not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.put('/preferences/:userId', authMiddleware,  async (req, res) => {
   try {
     const { userId } = req.params;
@@ -60,7 +138,49 @@ router.put('/preferences/:userId', authMiddleware,  async (req, res) => {
   }
 });
 
-// GET all info of a user
+/**
+ * @swagger
+ * /api/user/progress/{id}:
+ *   get:
+ *     summary: Get user progress and information
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     username:
+ *                       type: string
+ *                     currentLevel:
+ *                       $ref: '#/components/schemas/Level'
+ *                     currentDifficulty:
+ *                       type: number
+ *                     preference:
+ *                       $ref: '#/components/schemas/Preferences'
+ *       400:
+ *         description: Invalid user ID
+ *       404:
+ *         description: User not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/progress/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -142,7 +262,48 @@ const getDifficultyWithExperience = (lastDifficultyName, currentDifficultyName) 
   return rules[lastDifficultyName]?.[currentDifficultyName] || currentDifficultyName;
 };
 
-// POST /game/progress
+/**
+ * @swagger
+ * /api/user/progress:
+ *   post:
+ *     summary: Update user game progress
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - levelId
+ *               - bulletsUsed
+ *               - timeTaken
+ *               - botsKilled
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 description: User ID
+ *               levelId:
+ *                 type: string
+ *                 description: Level ID
+ *               bulletsUsed:
+ *                 type: number
+ *                 description: Number of bullets used in the level
+ *               timeTaken:
+ *                 type: number
+ *                 description: Time taken to complete the level
+ *               botsKilled:
+ *                 type: number
+ *                 description: Number of bots killed in the level
+ *     responses:
+ *       200:
+ *         description: Progress updated successfully
+ *       400:
+ *         description: Missing required fields
+ *       404:
+ *         description: User or level not found
+ */
 router.post('/progress', async (req, res) => {
   try {
     const { userId, levelId, bulletsUsed, timeTaken, botsKilled } = req.body;

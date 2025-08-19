@@ -8,9 +8,62 @@ const Level = require("../Model/Level");
 const Difficulty = require("../Model/Difficulty");
 const Preferences = require("../Model/Prefernces");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication endpoints
+ */
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - password
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: The user's username
+ *         password:
+ *           type: string
+ *           description: The user's password
+ */
 
-// Register Route
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Username already taken
+ *       500:
+ *         description: Server error
+ */
 router.post('/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -108,7 +161,56 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: User's username
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     username:
+ *                       type: string
+ *                     currentDifficulty:
+ *                       type: number
+ *                     currentLevel:
+ *                       type: string
+ *       400:
+ *         description: Invalid credentials
+ *       404:
+ *         description: User not found
+ */
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;

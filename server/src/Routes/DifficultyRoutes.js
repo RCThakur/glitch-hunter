@@ -3,7 +3,50 @@ const router = express.Router();
 const Diffmodel = require("../Model/Difficulty"); // adjust path as needed
 const authMiddleware = require("../utils/token");
 
-// CREATE a new difficulty
+/**
+ * @swagger
+ * tags:
+ *   name: Difficulty
+ *   description: Game difficulty management
+ */
+
+/**
+ * @swagger
+ * /api/difficulty:
+ *   post:
+ *     summary: Create a new difficulty level
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - _id
+ *               - name
+ *             properties:
+ *               _id:
+ *                 type: number
+ *                 description: Difficulty ID
+ *               name:
+ *                 type: string
+ *                 enum: [easy, medium, hard]
+ *                 description: Difficulty name
+ *     responses:
+ *       201:
+ *         description: Difficulty created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Difficulty'
+ *       400:
+ *         description: Invalid input or difficulty already exists
+ *       401:
+ *         description: Unauthorized
+ */
 router.post("/", authMiddleware, async (req, res) => {
     try {
         const { _id, name } = req.body;
@@ -24,7 +67,26 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-// READ all difficulties
+/**
+ * @swagger
+ * /api/difficulty:
+ *   get:
+ *     summary: Get all difficulty levels
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all difficulties
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Difficulty'
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/", authMiddleware, async (req, res) => {
     try {
         const difficulties = await Diffmodel.find();
@@ -34,7 +96,33 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 });
 
-// READ single difficulty by id
+/**
+ * @swagger
+ * /api/difficulty/{id}:
+ *   get:
+ *     summary: Get a specific difficulty level
+ *     tags: [Difficulty]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: Difficulty ID
+ *     responses:
+ *       200:
+ *         description: Difficulty details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Difficulty'
+ *       404:
+ *         description: Difficulty not found
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/:id", authMiddleware, async (req, res) => {
     try {
         const difficulty = await Diffmodel.findOne({ _id: req.params.id });

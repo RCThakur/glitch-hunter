@@ -7,6 +7,8 @@ const DifficultyRouter = require("./src/Routes/DifficultyRoutes");
 const LevelRouter = require("./src/Routes/LevelRoutes");
 const UserRouter = require("./src/Routes/UserRoute");
 const LeaderRouter = require("./src/Routes/LeaderBoardRoute");
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpecs = require('./src/config/swagger');
 
 dotenv.config();
 
@@ -14,7 +16,8 @@ const app= express();
 
 app.use(express.json());
 
-
+// Swagger UI setup
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 app.use("/api/auth", router);
 app.use("/api/user",UserRouter);
