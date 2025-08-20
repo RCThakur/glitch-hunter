@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LoginModal from "../components/LoginModal"; // Make sure this path is correct
+import LoginModal from "../components/LoginModal";
 import AudioManager from "../utils/AudioManager";
 
 export default function LoginPage({ onLoginSuccess }) {
@@ -7,22 +7,17 @@ export default function LoginPage({ onLoginSuccess }) {
   const audioManager = new AudioManager();
 
   const handleLogin = async (username, password) => {
-    // Here you call your server login API
-    try {
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        onLoginSuccess(data); // Pass user data to parent (App.jsx)
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      console.error(err);
+    // Test credentials
+    if (username === "test" && password === "1234") {
+      const fakeUser = {
+        id: 1,
+        name: "Test User",
+        email: "test@example.com",
+      };
+      onLoginSuccess(fakeUser);
+      return true;
+    } else {
+      alert("Invalid test credentials! Use test / 1234");
       return false;
     }
   };

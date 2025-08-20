@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
+import GamePage from "./pages/GamePage";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("landing");
-  const [user, setUser] = useState(null); // Store logged-in user
+  const [user, setUser] = useState(null);
 
   return (
-    <div className="App w-full min-h-screen overflow-hidden bg-black">
+    <div className="w-full min-h-screen bg-black text-white font-sans">
       {currentPage === "landing" && (
-        <LandingPage
-          onLoadingComplete={() => setCurrentPage("login")}
-        />
+        <LandingPage onLoadingComplete={() => setCurrentPage("login")} />
       )}
 
       {currentPage === "login" && (
@@ -21,10 +20,17 @@ function App() {
             setUser(userData);
             setCurrentPage("dashboard");
           }}
+          onBack={() => setCurrentPage("landing")}
         />
       )}
 
-      {currentPage === "dashboard" && <Dashboard user={user} />}
+      {currentPage === "dashboard" && (
+        <Dashboard user={user} onLogout={() => setCurrentPage("login")} />
+      )}
+
+      {currentPage === "game" && (
+        <GamePage user={user} />
+      )}
     </div>
   );
 }
